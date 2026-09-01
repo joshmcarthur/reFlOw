@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="description"
+      content="Play the original 2006 browser version of flOw by Jenova Chen and Nicholas Clark."
+    />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <title>flOw</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="player-container" aria-label="flOw game player"></div>
+    </div>
+    <div id="debug-panel" hidden></div>
+    <script type="module" src="/src/main.js"></script>
+    <script src="/ruffle/ruffle.js"></script>
+  </body>
+</html>
