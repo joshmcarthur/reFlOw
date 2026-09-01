@@ -188,13 +188,6 @@ function installPointerIntegration(container, playerElement) {
 
   container.addEventListener("pointerdown", resumeAudio, { passive: true });
   container.addEventListener("pointerup", resumeAudio, { passive: true });
-
-  // Suppress the browser context menu on touch; Ruffle uses rightClickOnly for its menu.
-  container.addEventListener("contextmenu", (event) => {
-    if (event.pointerType === "touch" || event.pointerType === "pen") {
-      event.preventDefault();
-    }
-  });
 }
 
 async function loadRuffleScript() {
