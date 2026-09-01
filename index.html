@@ -21,7 +21,48 @@
   <body>
     <div id="app">
       <div id="player-container" aria-label="flOw game player"></div>
+      <button id="about-trigger" type="button" hidden aria-haspopup="dialog" aria-controls="about-dialog">
+        About
+      </button>
     </div>
+    <dialog id="about-dialog" aria-labelledby="about-title">
+      <div class="about-dialog-inner">
+        <button id="about-close" type="button" aria-label="Close about panel">Close</button>
+        <h2 id="about-title">flOw</h2>
+        <p class="about-lead">2006 browser version</p>
+        <dl class="about-credits">
+          <dt>Created by</dt>
+          <dd>Jenova Chen and Nicholas Clark</dd>
+          <dt>Music by</dt>
+          <dd>Austin Wintory</dd>
+        </dl>
+        <p class="about-note">
+          Unofficial preservation project. The original Flash game and assets are loaded unchanged.
+          Not affiliated with or endorsed by the creators or publishers.
+        </p>
+        <ul class="about-links">
+          <li>
+            <a href="https://thatgamecompany.com/flow/" target="_blank" rel="noopener noreferrer">
+              Official releases at thatgamecompany
+            </a>
+          </li>
+          <li>
+            <a href="https://ruffle.rs/" target="_blank" rel="noopener noreferrer">
+              Powered by Ruffle
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/joshmcarthur/reFlOw/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Rights holders: request removal
+            </a>
+          </li>
+        </ul>
+      </div>
+    </dialog>
     <div id="debug-panel" hidden></div>
     <script type="module" src="/src/main.js"></script>
   </body>

@@ -198,6 +198,18 @@ Game assets remain network-first so audio updates are not stuck behind cache.
 - Ruffle Flash compatibility is incomplete; edge-case audio or input bugs may remain in Ruffle itself.
 - The bundled archive uses `flOw official.swf` rather than `core.swf`. If you have the original `core.swf` distribution, place it in `game/` and change the default SWF path in `src/main.js`.
 
+## Attribution
+
+**flOw** (2006 browser version) was created by **Jenova Chen** and **Nicholas Clark**, with music by **Austin Wintory**.
+
+This is an **unofficial preservation project**. The original Flash game and assets are loaded unchanged. It is not affiliated with or endorsed by the creators or publishers.
+
+- Official releases: [thatgamecompany — flOw](https://thatgamecompany.com/flow/)
+- Emulator: [Ruffle](https://ruffle.rs/) (MIT/Apache-2.0)
+- Rights holders may request removal via [GitHub Issues](https://github.com/joshmcarthur/reFlOw/issues)
+
+In the web player, tap the game once to reveal a small **About** button in the lower-left corner. It opens a credits panel without leaving the game.
+
 ## License
 
 The wrapper code in this repository is provided for preservation and educational use. The flOw game assets remain the property of their original authors and publishers. Ruffle is licensed under MIT/Apache-2.0; see `ruffle/LICENSE_*`.
