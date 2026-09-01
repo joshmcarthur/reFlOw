@@ -1,7 +1,7 @@
 {
   "name": "flOw",
   "short_name": "flOw",
-  "description": "The original 2006 browser version of flOw, preserved with Ruffle.",
+  "description": "Unofficial preservation of the 2006 browser version of flOw, playable with Ruffle.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

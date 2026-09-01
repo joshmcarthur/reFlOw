@@ -117,7 +117,7 @@ function preventPageGestures() {
   document.addEventListener(
     "touchmove",
     (event) => {
-      if (event.target.closest("#debug-panel")) {
+      if (event.target.closest("#debug-panel, #about-dialog, #about-trigger")) {
         return;
       }
       event.preventDefault();
@@ -127,6 +127,54 @@ function preventPageGestures() {
 
   document.addEventListener("gesturestart", (event) => {
     event.preventDefault();
+  });
+}
+
+function installAboutPanel() {
+  const app = document.getElementById("app");
+  const trigger = document.getElementById("about-trigger");
+  const dialog = document.getElementById("about-dialog");
+  const closeButton = document.getElementById("about-close");
+
+  if (!app || !trigger || !dialog || !closeButton) {
+    return;
+  }
+
+  const revealTrigger = () => {
+    trigger.hidden = false;
+    requestAnimationFrame(() => {
+      trigger.classList.add("visible");
+    });
+  };
+
+  app.addEventListener("pointerdown", revealTrigger, { once: true, passive: true });
+
+  trigger.addEventListener("click", () => {
+    if (typeof dialog.showModal === "function") {
+      dialog.showModal();
+    }
+  });
+
+  closeButton.addEventListener("click", () => {
+    dialog.close();
+  });
+
+  dialog.addEventListener("click", (event) => {
+    const rect = dialog.getBoundingClientRect();
+    const inDialog =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+
+    if (!inDialog) {
+      dialog.close();
+    }
+  });
+
+  dialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    dialog.close();
   });
 }
 
@@ -194,6 +242,7 @@ async function waitForRuffle() {
 async function boot() {
   installNetworkInstrumentation();
   preventPageGestures();
+  installAboutPanel();
 
   const container = document.getElementById("player-container");
   if (!container) {
