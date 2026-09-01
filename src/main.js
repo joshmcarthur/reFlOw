@@ -272,7 +272,7 @@ async function boot() {
     preloader: false,
     polyfills: false,
     favorFlash: false,
-    contextMenu: true,
+    contextMenu: "rightClickOnly",
     warnOnUnsupportedContent: false,
     logLevel: debugMode ? "warn" : "error",
     wmode: "opaque",
