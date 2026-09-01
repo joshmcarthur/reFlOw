@@ -6,6 +6,12 @@ import { fileURLToPath } from "node:url";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
+const repositoryName = process.env.GITHUB_REPOSITORY?.split("/")[1];
+const base =
+  process.env.GITHUB_PAGES === "true" && repositoryName
+    ? `/${repositoryName}/`
+    : "/";
+
 const MIME_TYPES = {
   ".swf": "application/x-shockwave-flash",
   ".mp3": "audio/mpeg",
@@ -45,6 +51,7 @@ function serveGameDirectory() {
 }
 
 export default defineConfig({
+  base,
   publicDir: "static",
   plugins: [
     serveGameDirectory(),

@@ -1,11 +1,11 @@
 const CACHE_NAME = "flow-ruffle-v1";
 const PRECACHE_URLS = [
-  "/",
-  "/index.html",
-  "/manifest.webmanifest",
-  "/icons/icon-192.png",
-  "/icons/icon-512.png",
-  "/ruffle/ruffle.js",
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./ruffle/ruffle.js",
 ];
 
 self.addEventListener("install", (event) => {
@@ -29,7 +29,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   const url = new URL(request.url);
-  if (!url.pathname.startsWith("/game/")) {
+  if (!url.pathname.includes("/game/")) {
     event.respondWith(
       caches.match(request).then((cached) => cached || fetch(request)),
     );

@@ -119,9 +119,40 @@ Suggested layout after build:
 
 ### GitHub Pages
 
-1. Run `npm run build`
-2. Deploy `dist/` to `gh-pages` or configure Pages to publish from the build output
-3. Ensure WASM files are served with `application/wasm`
+This repository includes a GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) that builds and deploys automatically when changes are pushed to `main`.
+
+**One-time setup**
+
+1. Open the repository on GitHub.
+2. Go to **Settings → Pages**.
+3. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+
+**Deploy**
+
+1. Merge to `main`, or push directly to `main`.
+2. The **Deploy to GitHub Pages** workflow builds with `npm run build:pages` and publishes `dist/`.
+3. When the workflow finishes, the site is available at:
+
+   `https://<username>.github.io/reFlOw/`
+
+   For this repository: `https://joshmcarthur.github.io/reFlOw/`
+
+**How the subpath is handled**
+
+GitHub Pages project sites are served from a repository subpath (`/reFlOw/`). The Vite build sets `base` to that path when `GITHUB_PAGES=true`, and the app uses `import.meta.env.BASE_URL` for game assets, Ruffle, the service worker, and the manifest.
+
+**Test a Pages build locally**
+
+```bash
+GITHUB_REPOSITORY=joshmcarthur/reFlOw npm run build:pages
+npm run preview
+```
+
+Open the preview URL and confirm assets load from `/reFlOw/...`.
+
+**Manual deploy**
+
+If you prefer not to use Actions, you can still upload `dist/` after running `npm run build:pages`.
 
 ### Cloudflare Pages
 

@@ -6,7 +6,9 @@ const SWF_VARIANTS = {
   widescreen: "flOw widescreen.swf",
 };
 
-const GAME_BASE_PATH = "/game/";
+const APP_BASE = import.meta.env.BASE_URL;
+const GAME_BASE_PATH = `${APP_BASE}game/`;
+const RUFFLE_BASE_PATH = `${APP_BASE}ruffle/`;
 const DEFAULT_VARIANT = "official";
 const RUFFLE_VERSION = "0.5.0";
 
@@ -23,7 +25,8 @@ const networkLog = [];
 function isGameAssetUrl(url) {
   try {
     const parsed = new URL(url, window.location.href);
-    return parsed.pathname.startsWith(GAME_BASE_PATH);
+    const gamePath = new URL(GAME_BASE_PATH, window.location.href).pathname;
+    return parsed.pathname.startsWith(gamePath);
   } catch {
     return false;
   }
@@ -139,7 +142,31 @@ function installPointerIntegration(container, playerElement) {
   container.addEventListener("pointerup", resumeAudio, { passive: true });
 }
 
+async function loadRuffleScript() {
+  if (window.RufflePlayer?.newest) {
+    return;
+  }
+
+  await new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-ruffle="true"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(undefined), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Failed to load Ruffle")), { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `${APP_BASE}ruffle/ruffle.js`;
+    script.dataset.ruffle = "true";
+    script.onload = () => resolve(undefined);
+    script.onerror = () => reject(new Error("Failed to load Ruffle"));
+    document.head.appendChild(script);
+  });
+}
+
 async function waitForRuffle() {
+  await loadRuffleScript();
+
   if (window.RufflePlayer?.newest) {
     return window.RufflePlayer.newest();
   }
@@ -148,7 +175,7 @@ async function waitForRuffle() {
     window.RufflePlayer = window.RufflePlayer || {};
     window.RufflePlayer.config = {
       ...(window.RufflePlayer.config || {}),
-      publicPath: new URL("/ruffle/", window.location.href).href,
+      publicPath: new URL(RUFFLE_BASE_PATH, window.location.href).href,
     };
 
     const check = () => {
@@ -186,7 +213,7 @@ async function boot() {
   const loadOptions = {
     url: swfUrl,
     base: gameBaseUrl,
-    publicPath: new URL("/ruffle/", window.location.href).href,
+    publicPath: new URL(RUFFLE_BASE_PATH, window.location.href).href,
     allowNetworking: "all",
     autoplay: "on",
     backgroundColor: "#000000",
@@ -212,7 +239,7 @@ async function boot() {
   }
 
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js").catch(() => {
+    navigator.serviceWorker.register(`${APP_BASE}sw.js`).catch(() => {
       // Optional offline support; ignore registration failures in dev.
     });
   }
