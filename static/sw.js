@@ -1,12 +1,65 @@
-const CACHE_NAME = "flow-ruffle-v1";
+const CACHE_NAME = "flow-ruffle-v2";
+
 const PRECACHE_URLS = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./ruffle/ruffle.js",
 ];
+
+function isGameAssetRequest(url) {
+  return url.pathname.includes("/game/");
+}
+
+function isAppShellRequest(url) {
+  if (url.pathname.includes("/assets/")) {
+    return true;
+  }
+
+  if (url.pathname.endsWith("/sw.js")) {
+    return true;
+  }
+
+  if (url.pathname.includes("/ruffle/")) {
+    return true;
+  }
+
+  if (url.pathname.endsWith("/manifest.webmanifest")) {
+    return true;
+  }
+
+  return url.pathname.endsWith("/") || url.pathname.endsWith("/index.html");
+}
+
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    const cached = await cache.match(request);
+    if (cached) {
+      return cached;
+    }
+    throw error;
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) {
+    return cached;
+  }
+
+  const response = await fetch(request);
+  if (response.ok) {
+    const cache = await caches.open(CACHE_NAME);
+    cache.put(request, response.clone());
+  }
+  return response;
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -29,17 +82,21 @@ self.addEventListener("fetch", (event) => {
   }
 
   const url = new URL(request.url);
-  if (!url.pathname.includes("/game/")) {
-    event.respondWith(
-      caches.match(request).then((cached) => cached || fetch(request)),
-    );
+  if (url.origin !== self.location.origin) {
     return;
   }
 
-  // Game assets: network-first so audio/SWF updates are not stuck behind cache.
-  event.respondWith(
-    fetch(request)
-      .then((response) => response)
-      .catch(() => caches.match(request)),
-  );
+  if (isGameAssetRequest(url)) {
+    // Game assets: network-first so audio/SWF updates are not stuck behind cache.
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  if (isAppShellRequest(url)) {
+    // App shell: network-first so deploys are not stuck behind stale HTML/JS.
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
+  event.respondWith(cacheFirst(request));
 });
