@@ -130,6 +130,28 @@ function preventPageGestures() {
   });
 }
 
+function setBootStatus(message, { isError = false } = {}) {
+  const status = document.getElementById("boot-status");
+  if (!status) {
+    return;
+  }
+
+  status.hidden = false;
+  status.textContent = message;
+  status.classList.toggle("error", isError);
+}
+
+function clearBootStatus() {
+  const status = document.getElementById("boot-status");
+  if (!status) {
+    return;
+  }
+
+  status.hidden = true;
+  status.textContent = "";
+  status.classList.remove("error");
+}
+
 function installAboutPanel() {
   const app = document.getElementById("app");
   const trigger = document.getElementById("about-trigger");
@@ -190,6 +212,10 @@ function installPointerIntegration(container, playerElement) {
   container.addEventListener("pointerup", resumeAudio, { passive: true });
 }
 
+function isRuffleScriptReady(script) {
+  return Boolean(script?.dataset.ruffleLoaded || window.RufflePlayer?.newest);
+}
+
 async function loadRuffleScript() {
   if (window.RufflePlayer?.newest) {
     return;
@@ -198,6 +224,11 @@ async function loadRuffleScript() {
   await new Promise((resolve, reject) => {
     const existing = document.querySelector('script[data-ruffle="true"]');
     if (existing) {
+      if (isRuffleScriptReady(existing)) {
+        resolve(undefined);
+        return;
+      }
+
       existing.addEventListener("load", () => resolve(undefined), { once: true });
       existing.addEventListener("error", () => reject(new Error("Failed to load Ruffle")), { once: true });
       return;
@@ -206,7 +237,10 @@ async function loadRuffleScript() {
     const script = document.createElement("script");
     script.src = `${APP_BASE}ruffle/ruffle.js`;
     script.dataset.ruffle = "true";
-    script.onload = () => resolve(undefined);
+    script.onload = () => {
+      script.dataset.ruffleLoaded = "true";
+      resolve(undefined);
+    };
     script.onerror = () => reject(new Error("Failed to load Ruffle"));
     document.head.appendChild(script);
   });
@@ -243,6 +277,7 @@ async function boot() {
   installNetworkInstrumentation();
   preventPageGestures();
   installAboutPanel();
+  setBootStatus("Loading flOw…");
 
   const container = document.getElementById("player-container");
   if (!container) {
@@ -282,6 +317,7 @@ async function boot() {
   };
 
   player.ruffle().load(loadOptions);
+  clearBootStatus();
 
   if (debugMode) {
     renderDebugPanel();
@@ -296,6 +332,7 @@ async function boot() {
 
 boot().catch((error) => {
   console.error("Failed to start flOw:", error);
+  setBootStatus("Could not start flOw. Refresh the page to try again.", { isError: true });
   if (debugMode) {
     const panel = document.getElementById("debug-panel");
     if (panel) {

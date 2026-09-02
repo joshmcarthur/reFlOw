@@ -50,11 +50,27 @@ function serveGameDirectory() {
   };
 }
 
+function injectRuffleScript() {
+  let resolvedBase = "/";
+
+  return {
+    name: "inject-ruffle-script",
+    configResolved(config) {
+      resolvedBase = config.base;
+    },
+    transformIndexHtml(html) {
+      const scriptTag = `<script src="${resolvedBase}ruffle/ruffle.js" data-ruffle="true"></script>`;
+      return html.includes("data-ruffle=") ? html : html.replace("</body>", `    ${scriptTag}\n  </body>`);
+    },
+  };
+}
+
 export default defineConfig({
   base,
   publicDir: "static",
   plugins: [
     serveGameDirectory(),
+    injectRuffleScript(),
     viteStaticCopy({
       targets: [
         { src: "game/**/*", dest: "game" },
